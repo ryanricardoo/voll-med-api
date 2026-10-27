@@ -1,3 +1,10 @@
 package med.voll.api.infra;
 
-public record DadosErro(String menssagem) { }
+import org.springframework.validation.FieldError;
+
+public record DadosErro(String campo, String menssagem) {
+
+    public DadosErro(FieldError erro){
+        this(erro.getField(), erro.getDefaultMessage());
+    }
+ }

@@ -1,6 +1,7 @@
 package med.voll.api.infra;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -11,8 +12,12 @@ public class TratadorDeErros {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<DadosErro> tratarErro404(){
-        var erroDto = new DadosErro("Recurso não encontrado!");
-        return ResponseEntity.status(404).body(erroDto);
+        return ResponseEntity.notFound().build();
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity tratarErro400(MethodArgumentNotValidException ex){
+        var erros = ex.getFieldErrors();
+        return ResponseEntity.badRequest().body(erros.stream().map(DadosErro::new).toList());
+    }
 }
